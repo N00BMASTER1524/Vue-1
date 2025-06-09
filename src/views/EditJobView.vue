@@ -1,8 +1,13 @@
 <script setup>
-import router from '@/router';
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router'; // ✅ Correct
 import { useToast } from 'vue-toastification';
 import axios from 'axios';
+
+const router = useRouter(); // ✅ Use this
+const route = useRoute();
+
+const jobId = route.params.id;
 
 const form = reactive({
     type: 'Full-Timed',
@@ -19,10 +24,15 @@ const form = reactive({
 
 });
 
+const state = reactive({
+    job: {},
+    isLoading: true
+});
+
 const  toast = useToast();
 
 const handleSubmit = async () => {
-    const newJob = {
+    const updateJob = {
         title: form.title,
         type: form.type,
         location: form.location,
@@ -36,17 +46,37 @@ const handleSubmit = async () => {
         },
     };
     try {
-    const respose = await axios.post('/api/jobs/', newJob);
-    toast.success('Job added successfully');
+    const respose = await axios.put(`/api/jobs/${jobId}`, updateJob);
+    toast.success('Job updated successfully');
     router.push(`/jobs/${respose.data.id}`);
 
   } catch (error) {
     console.error('Error fetching job', error);
-    toast.error('Job was not added');
+    toast.error('Job was not updated');
   }
-    
-
 }
+
+onMounted( async () => {
+    try {
+        const respose = await axios.get(`/api/jobs/${jobId}`);
+        state.job = respose.data ;
+        // Populate Inputs
+        form.type = state.job.type;
+        form.title = state.job.title;
+        form.description = state.job.description;
+        form.salary = state.job.salary;
+        form.location = state.job.salary;
+        form.company.name = state.job.company.name;
+        form.company.description = state.job.company.description;
+        form.company.contactEmail = state.job.company.contactEmail;
+        form.company.contactPhone = state.job.company.contactPhone;
+    } catch (error) {
+        console.error(`Error Fetching job`, error);   
+    } finally {
+        state.isLoading = false;
+    }
+
+});
 </script>
 
 <template>
@@ -56,7 +86,7 @@ const handleSubmit = async () => {
           class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
         >
           <form @submit.prevent="handleSubmit">
-            <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
+            <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
 
             <div class="mb-4">
               <label for="type" class="block text-gray-700 font-bold mb-2"
@@ -215,7 +245,7 @@ const handleSubmit = async () => {
                 class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                 type="submit"
               >
-                Add Job
+                Update Job
               </button>
             </div>
           </form>
