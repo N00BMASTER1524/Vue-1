@@ -83,20 +83,6 @@
         "contactEmail": "contact@ipsumlorem.com",
         "contactPhone": "555-555-5555"
       }
-    },
-    {
-      "id": "57c2",
-      "title": "Kylynn Atkins",
-      "type": "Part-Time",
-      "location": "Ipsam culpa consequa",
-      "description": "A nihil magni est cu",
-      "salary": "$175K - $200K",
-      "company": {
-        "name": "Bush and White LLC",
-        "description": "Soluta ad laborum co",
-        "contactEmail": "xavepel@mailinator.com",
-        "contactPhone": "+1 (326) 397-1626"
-      }
     }
   ]
 }
